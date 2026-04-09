@@ -1,0 +1,97 @@
+<div class="shift-start-container">
+  <h2>Start Shift - Meter Reading</h2>
+
+  <div *ngIf="!showReadingForm" class="setup-form">
+    <form [formGroup]="shiftForm" (ngSubmit)="startShift()">
+      <!-- Staff Selection -->
+      <div class="form-group">
+        <label for="staffSelect">Select Staff:</label>
+        <select
+          id="staffSelect"
+          formControlName="staff"
+          (change)="onStaffSelect($event)"
+          class="form-control"
+        >
+          <option value="">-- Select Staff --</option>
+          <option *ngFor="let s of staff" [value]="s.id">{{ s.name }} ({{ s.shift }})</option>
+        </select>
+      </div>
+
+      <!-- DU Selection -->
+      <div class="form-group">
+        <label for="duSelect">Select DU:</label>
+        <select
+          id="duSelect"
+          formControlName="du"
+          (change)="onDUSelect($event)"
+          class="form-control"
+        >
+          <option value="">-- Select DU --</option>
+          <option *ngFor="let du of dus" [value]="du.id">{{ du.name }}</option>
+        </select>
+      </div>
+
+      <!-- Nozzle Selection 1 -->
+      <div class="form-group">
+        <label for="nozzle1">Nozzle 1:</label>
+        <select
+          id="nozzle1"
+          formControlName="nozzle1"
+          (change)="onNozzleSelect($event, 1)"
+          class="form-control"
+        >
+          <option value="">-- Select Nozzle --</option>
+          <option *ngFor="let nozzle of availableNozzles" [value]="nozzle.id">
+            Nozzle {{ nozzle.nozzleNumber }} - {{ nozzle.fuelType }} (Reading:
+            {{ nozzle.currentReading }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Nozzle Selection 2 -->
+      <div class="form-group">
+        <label for="nozzle2">Nozzle 2:</label>
+        <select
+          id="nozzle2"
+          formControlName="nozzle2"
+          (change)="onNozzleSelect($event, 2)"
+          class="form-control"
+        >
+          <option value="">-- Select Nozzle --</option>
+          <option *ngFor="let nozzle of availableNozzles" [value]="nozzle.id">
+            Nozzle {{ nozzle.nozzleNumber }} - {{ nozzle.fuelType }} (Reading:
+            {{ nozzle.currentReading }})
+          </option>
+        </select>
+      </div>
+
+      <button type="submit" [disabled]="!shiftForm.valid" class="btn btn-primary">
+        Start Shift & Record Opening Readings
+      </button>
+    </form>
+
+    <div *ngIf="selectedStaff" class="shift-info">
+      <h3>Current Assignment</h3>
+      <p><strong>Staff:</strong> {{ selectedStaff.name }}</p>
+      <p><strong>Shift:</strong> {{ selectedStaff.shift }}</p>
+      <p><strong>DU:</strong> {{ selectedDU?.name }}</p>
+      <p>
+        <strong>Nozzles:</strong>
+        <span *ngFor="let nozzle of selectedNozzles; let last = last">
+          {{ nozzle.nozzleNumber }} ({{ nozzle.fuelType }}){{ !last ? ', ' : '' }}
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Meter Reading Form -->
+  <div *ngIf="showReadingForm && currentShiftAssignment" class="reading-section">
+    <app-meter-reading
+      [shiftAssignment]="currentShiftAssignment"
+      [nozzles]="selectedNozzles"
+      (readingRecorded)="onReadingRecorded()"
+    >
+    </app-meter-reading>
+    <p class="progress-text">Readings recorded: {{ readingsRecorded }}/2</p>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<div class="daily-sales-container">
+  <h2>Daily Sales Report</h2>
+
+  <div class="report-controls">
+    <label for="dateInput">Select Date:</label>
+    <input
+      id="dateInput"
+      type="date"
+      [(ngModel)]="selectedDate"
+      (change)="onDateChange()"
+      class="form-control"
+    />
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading report...</p>
+  </div>
+
+  <div *ngIf="!loading && salesReports.length === 0" class="no-data">
+    <p>No sales data available for the selected date.</p>
+  </div>
+
+  <div *ngIf="!loading && salesReports.length > 0">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card">
+        <h4>Total Sales (All DUs)</h4>
+        <p class="value">{{ getTotalSalesAllDUs() | number: '1.2-2' }} L</p>
+      </div>
+    </div>
+
+    <!-- DU-wise Reports -->
+    <div *ngFor="let report of salesReports" class="du-report">
+      <div class="du-header">
+        <h3>{{ report.du.name }}</h3>
+        <div class="du-summary">
+          <span class="diesel"
+            >Diesel: {{ getDieselSales(report.nozzleWiseSales) | number: '1.2-2' }} L</span
+          >
+          <span class="petrol"
+            >Petrol: {{ getPetrolSales(report.nozzleWiseSales) | number: '1.2-2' }} L</span
+          >
+          <span class="total">Total: {{ report.totalSales | number: '1.2-2' }} L</span>
+        </div>
+      </div>
+
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>Nozzle</th>
+            <th>Fuel Type</th>
+            <th>Opening Reading</th>
+            <th>Closing Reading</th>
+            <th>Liters Dispensed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let nozzle of report.nozzleWiseSales">
+            <td>{{ nozzle.nozzleNumber }}</td>
+            <td>{{ nozzle.fuelType }}</td>
+            <td>{{ nozzle.openingReading | number: '1.2-2' }}</td>
+            <td>{{ nozzle.closingReading | number: '1.2-2' }}</td>
+            <td class="dispensed">{{ nozzle.litersDispensed | number: '1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Export Section -->
+    <div class="export-section">
+      <button class="btn btn-export" (click)="generateReport()">Refresh Report</button>
+    </div>
+  </div>
+</div>
