@@ -1,0 +1,179 @@
+.daily-sales-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+
+  h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+}
+
+.report-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+  justify-content: center;
+
+  label {
+    font-weight: 500;
+    color: #555;
+  }
+
+  .form-control {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+  }
+}
+
+.loading,
+.no-data {
+  text-align: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  color: #666;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+
+  .card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    h4 {
+      margin-top: 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .value {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+  }
+}
+
+.du-report {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .du-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 2px solid #007bff;
+
+    h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .du-summary {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      span {
+        font-size: 14px;
+        font-weight: 500;
+
+        &.diesel {
+          color: #ff6b6b;
+        }
+
+        &.petrol {
+          color: #ffd93d;
+        }
+
+        &.total {
+          color: #51cf66;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  .sales-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background-color: #e9ecef;
+
+      tr {
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #dee2e6;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+
+        td {
+          padding: 12px;
+          color: #555;
+          font-size: 14px;
+
+          &.dispensed {
+            font-weight: 600;
+            color: #28a745;
+          }
+        }
+      }
+    }
+  }
+}
+
+.export-section {
+  text-align: center;
+  margin-top: 20px;
+  padding: 20px;
+
+  .btn-export {
+    padding: 12px 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
