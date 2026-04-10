@@ -22,6 +22,8 @@ export class MeterReadingComponent implements OnInit {
   @Input() staffId: string = '';
   @Input() duId: string = '';
   @Input() isReadingRecorded: boolean = false;
+  @Input() readingType: 'opening' | 'closing' = 'opening';
+  @Input() previousReading: number | null = null;
   @Output() readingRecorded = new EventEmitter<{ nozzleId: string; readingValue: number }>();
 
   readingForm: FormGroup;
@@ -67,7 +69,7 @@ export class MeterReadingComponent implements OnInit {
         staffName: 'Staff', // Can be updated with actual staff name if passed as input
         readingValue: parseFloat(readingValue),
         readingTime: new Date(),
-        type: 'opening',
+        type: this.readingType,
       };
 
       // Save to localStorage

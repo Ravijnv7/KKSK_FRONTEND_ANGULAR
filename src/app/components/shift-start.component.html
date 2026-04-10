@@ -66,6 +66,38 @@
         </select>
       </div>
 
+      <!-- Fuel Prices -->
+      <div class="price-section">
+        <h4>Fuel Prices (Per Liter)</h4>
+        <div class="price-grid">
+          <div class="form-group">
+            <label for="dieselPrice">Diesel Price (₹):</label>
+            <input
+              id="dieselPrice"
+              type="number"
+              formControlName="dieselPrice"
+              placeholder="Enter diesel price"
+              class="form-control"
+              step="0.01"
+              min="0"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="petrolPrice">Petrol Price (₹):</label>
+            <input
+              id="petrolPrice"
+              type="number"
+              formControlName="petrolPrice"
+              placeholder="Enter petrol price"
+              class="form-control"
+              step="0.01"
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
+
       <button type="submit" [disabled]="!shiftForm.valid" class="btn btn-primary">
         Start Shift & Record Opening Readings
       </button>
@@ -105,6 +137,6 @@
     *ngIf="showSummary"
     [shiftAssignment]="currentShiftAssignment"
     [meterReadings]="storageService.getMeterReadings()"
-    (completedShift)="completeShift()"
+    (readyToCloseShift)="completeShift()"
   ></app-shift-summary>
 </div>

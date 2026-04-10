@@ -13,15 +13,21 @@
       </div>
 
       <div class="nozzle-details">
-        <p>
+        <p *ngIf="readingType === 'opening'">
           <strong>System Reading:</strong>
           <span class="reading-value">{{ nozzle.currentReading }} L</span>
+        </p>
+        <p *ngIf="readingType === 'closing' && previousReading !== null">
+          <strong>Opening Reading (Recorded):</strong>
+          <span class="reading-value">{{ previousReading }} L</span>
         </p>
       </div>
 
       <form [formGroup]="readingForm" (ngSubmit)="submitReading()" class="reading-form">
         <div class="form-group">
-          <label for="readingInput">Enter Opening Meter Reading (liters):</label>
+          <label for="readingInput">
+            Enter {{ readingType === 'opening' ? 'Opening' : 'Closing' }} Meter Reading (liters):
+          </label>
           <input
             id="readingInput"
             type="number"

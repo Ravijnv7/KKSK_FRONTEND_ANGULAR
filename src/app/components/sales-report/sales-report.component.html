@@ -1,0 +1,66 @@
+<div class="sales-report-container">
+  <h3>Sales Report</h3>
+
+  <div class="shift-summary-section">
+    <div class="summary-info">
+      <p>
+        <strong>Staff:</strong> <span>{{ shiftAssignment?.staffName }}</span>
+      </p>
+      <p>
+        <strong>DU:</strong> <span>{{ shiftAssignment?.duId }}</span>
+      </p>
+      <p>
+        <strong>Date:</strong> <span>{{ shiftAssignment?.shiftDate | date: 'short' }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="sales-table-section">
+    <table class="sales-table">
+      <thead>
+        <tr>
+          <th>Nozzle</th>
+          <th>Fuel Type</th>
+          <th>Opening Reading</th>
+          <th>Closing Reading</th>
+          <th>Liters Sold</th>
+          <th>Price/L (₹)</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let sale of nozzleSales"
+          [class.diesel]="sale.fuelType === 'Diesel'"
+          [class.petrol]="sale.fuelType === 'Petrol'"
+        >
+          <td class="nozzle-number">{{ sale.nozzleNumber }}</td>
+          <td class="fuel-type">{{ sale.fuelType }}</td>
+          <td class="reading opening">{{ sale.opening }} L</td>
+          <td class="reading closing">{{ sale.closing }} L</td>
+          <td class="sold">
+            <strong>{{ sale.sold.toFixed(2) }} L</strong>
+          </td>
+          <td class="price">{{ sale.price.toFixed(2) }}</td>
+          <td class="amount">
+            <strong>₹ {{ sale.amount.toFixed(2) }}</strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="totals-section">
+    <div class="total-card liters">
+      <div class="total-label">Total Liters Sold</div>
+      <div class="total-value">{{ totalLiters.toFixed(2) }} L</div>
+    </div>
+
+    <div class="total-card amount">
+      <div class="total-label">Total Sales Amount</div>
+      <div class="total-value">₹ {{ totalSalesAmount.toFixed(2) }}</div>
+    </div>
+  </div>
+
+  <button class="btn btn-complete" (click)="completeShift()">Complete Shift</button>
+</div>

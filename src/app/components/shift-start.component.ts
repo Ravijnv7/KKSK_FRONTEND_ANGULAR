@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -44,12 +45,15 @@ export class ShiftStartComponent implements OnInit {
     private readingService: ReadingService,
     public storageService: StorageService,
     private fb: FormBuilder,
+    private router: Router,
   ) {
     this.shiftForm = this.fb.group({
       staff: ['', Validators.required],
       du: ['', Validators.required],
       nozzle1: ['', Validators.required],
       nozzle2: ['', Validators.required],
+      dieselPrice: ['', [Validators.required, Validators.min(0)]],
+      petrolPrice: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -126,6 +130,8 @@ export class ShiftStartComponent implements OnInit {
         shiftDate: new Date(),
         openingReadings: [],
         status: 'in-progress',
+        dieselPrice: parseFloat(this.shiftForm.get('dieselPrice')?.value || '0'),
+        petrolPrice: parseFloat(this.shiftForm.get('petrolPrice')?.value || '0'),
       };
 
       // Save to localStorage
@@ -153,12 +159,9 @@ export class ShiftStartComponent implements OnInit {
   }
 
   completeShift(): void {
-    if (this.currentShiftAssignment) {
-      this.currentShiftAssignment.status = 'completed';
-      this.readingService.createShiftAssignment(this.currentShiftAssignment);
-      this.storageService.clearShiftData();
-      this.resetForm();
-    }
+    // Navigate to close shift page - data will persist in localStorage
+    // Data will be cleared only after closing shift is completed
+    this.router.navigate(['/shift-close']);
   }
 
   resetForm(): void {

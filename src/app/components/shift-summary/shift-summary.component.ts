@@ -13,7 +13,7 @@ import { DUService } from '../../services/du.service';
 export class ShiftSummaryComponent implements OnInit {
   @Input() shiftAssignment: ShiftAssignment | null = null;
   @Input() meterReadings: MeterReading[] = [];
-  @Output() completedShift = new EventEmitter<void>();
+  @Output() readyToCloseShift = new EventEmitter<void>();
 
   nozzleDetails: Nozzle[] = [];
 
@@ -41,7 +41,7 @@ export class ShiftSummaryComponent implements OnInit {
     return this.meterReadings.find((r) => r.nozzleId === nozzleId);
   }
 
-  completeShift(): void {
-    this.completedShift.emit();
+  continueToCloseShift(): void {
+    this.readyToCloseShift.emit();
   }
 }
