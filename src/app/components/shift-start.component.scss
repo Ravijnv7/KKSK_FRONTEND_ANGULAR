@@ -100,3 +100,72 @@
   margin-top: 15px;
   font-weight: 500;
 }
+
+.reading-section {
+  h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+  }
+
+  .info-text {
+    background: #e8f4f8;
+    border-left: 4px solid #0277bd;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    color: #0277bd;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 20px 0;
+  }
+}
+
+.price-section {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #ffc107;
+
+  h4 {
+    margin: 0 0 15px 0;
+    color: #856404;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+
+      label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #856404;
+      }
+
+      .form-control {
+        padding: 12px;
+        border: 2px solid #ffc107;
+        background: white;
+
+        &:focus {
+          border-color: #ff9800;
+          box-shadow: 0 0 8px rgba(255, 152, 0, 0.2);
+        }
+      }
+    }
+  }
+}

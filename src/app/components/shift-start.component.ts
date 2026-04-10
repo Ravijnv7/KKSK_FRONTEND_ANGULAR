@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -7,14 +8,21 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { StaffService, DUService, ReadingService } from '../services';
-import { Staff, DU, Nozzle, ShiftAssignment } from '../models/index';
+import { StaffService, DUService, ReadingService, StorageService } from '../services';
+import { Staff, DU, Nozzle, ShiftAssignment, MeterReading } from '../models/index';
 import { MeterReadingComponent } from './meter-reading/meter-reading.component';
+import { ShiftSummaryComponent } from './shift-summary/shift-summary.component';
 
 @Component({
   selector: 'app-shift-start',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MeterReadingComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MeterReadingComponent,
+    ShiftSummaryComponent,
+  ],
   templateUrl: './shift-start.component.html',
   styleUrls: ['./shift-start.component.scss'],
 })
@@ -27,6 +35,7 @@ export class ShiftStartComponent implements OnInit {
   selectedNozzles: Nozzle[] = [];
   shiftForm: FormGroup;
   showReadingForm = false;
+  showSummary = false;
   readingsRecorded = 0;
   currentShiftAssignment: ShiftAssignment | null = null;
 
@@ -34,19 +43,36 @@ export class ShiftStartComponent implements OnInit {
     private staffService: StaffService,
     private duService: DUService,
     private readingService: ReadingService,
+    public storageService: StorageService,
     private fb: FormBuilder,
+    private router: Router,
   ) {
     this.shiftForm = this.fb.group({
       staff: ['', Validators.required],
       du: ['', Validators.required],
       nozzle1: ['', Validators.required],
       nozzle2: ['', Validators.required],
+      dieselPrice: ['', [Validators.required, Validators.min(0)]],
+      petrolPrice: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
   ngOnInit(): void {
     this.loadStaff();
     this.loadDUs();
+    this.loadExistingShift();
+  }
+
+  // Load existing shift if one is in progress
+  loadExistingShift(): void {
+    const savedShift = this.storageService.getShiftAssignment();
+    if (savedShift) {
+      this.currentShiftAssignment = savedShift;
+      this.readingsRecorded = this.storageService.getMeterReadings().length;
+      if (this.readingsRecorded > 0) {
+        this.showReadingForm = true;
+      }
+    }
   }
 
   loadStaff(): void {
@@ -95,7 +121,6 @@ export class ShiftStartComponent implements OnInit {
 
   startShift(): void {
     if (this.selectedStaff && this.selectedDU && this.selectedNozzles.length === 2) {
-      this.showReadingForm = true;
       const assignment: ShiftAssignment = {
         id: `assignment-${Date.now()}`,
         staffId: this.selectedStaff.id,
@@ -105,17 +130,38 @@ export class ShiftStartComponent implements OnInit {
         shiftDate: new Date(),
         openingReadings: [],
         status: 'in-progress',
+        dieselPrice: parseFloat(this.shiftForm.get('dieselPrice')?.value || '0'),
+        petrolPrice: parseFloat(this.shiftForm.get('petrolPrice')?.value || '0'),
       };
+
+      // Save to localStorage
+      this.storageService.saveShiftAssignment(assignment);
       this.currentShiftAssignment = assignment;
+      this.showReadingForm = true;
+      this.readingsRecorded = 0;
     }
   }
 
-  onReadingRecorded(): void {
+  onReadingRecorded(event: { nozzleId: string; readingValue: number }): void {
+    // Reading is already saved by MeterReadingComponent
     this.readingsRecorded++;
+
+    // If both readings recorded, show summary
     if (this.readingsRecorded === 2 && this.currentShiftAssignment) {
-      this.readingService.createShiftAssignment(this.currentShiftAssignment);
-      this.resetForm();
+      this.showSummary = true;
+      this.showReadingForm = false;
     }
+  }
+
+  // Check if a nozzle already has a reading recorded
+  hasNozzleReading(nozzleId: string): boolean {
+    return this.storageService.hasReadingForNozzle(nozzleId);
+  }
+
+  completeShift(): void {
+    // Navigate to close shift page - data will persist in localStorage
+    // Data will be cleared only after closing shift is completed
+    this.router.navigate(['/shift-close']);
   }
 
   resetForm(): void {
@@ -124,6 +170,7 @@ export class ShiftStartComponent implements OnInit {
     this.selectedDU = null;
     this.selectedNozzles = [];
     this.showReadingForm = false;
+    this.showSummary = false;
     this.readingsRecorded = 0;
     this.currentShiftAssignment = null;
   }

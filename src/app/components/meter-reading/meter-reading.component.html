@@ -1,55 +1,63 @@
-<div class="meter-reading-container" *ngIf="!allNozzlesProcessed">
-  <h3>Record Opening Meter Reading</h3>
-
-  <div class="progress-bar">
-    <div class="progress-fill" [style.width.%]="progressPercentage"></div>
-  </div>
-  <p class="progress-text">{{ currentNozzleIndex + 1 }} of {{ nozzles.length }}</p>
-
-  <div *ngIf="currentNozzle" class="nozzle-info">
+<div class="meter-reading-container">
+  <div *ngIf="nozzle && !isReadingRecorded" class="nozzle-reading-form">
     <div class="nozzle-card">
-      <h4>Nozzle {{ currentNozzle.nozzleNumber }}</h4>
-      <p><strong>Fuel Type:</strong> {{ currentNozzle.fuelType }}</p>
-      <p><strong>Current System Reading:</strong> {{ currentNozzle.currentReading }} liters</p>
+      <div class="nozzle-header">
+        <h4>Nozzle {{ nozzle.nozzleNumber }}</h4>
+        <span
+          class="fuel-type"
+          [class.diesel]="nozzle.fuelType === 'Diesel'"
+          [class.petrol]="nozzle.fuelType === 'Petrol'"
+        >
+          {{ nozzle.fuelType }}
+        </span>
+      </div>
+
+      <div class="nozzle-details">
+        <p *ngIf="readingType === 'opening'">
+          <strong>System Reading:</strong>
+          <span class="reading-value">{{ nozzle.currentReading }} L</span>
+        </p>
+        <p *ngIf="readingType === 'closing' && previousReading !== null">
+          <strong>Opening Reading (Recorded):</strong>
+          <span class="reading-value">{{ previousReading }} L</span>
+        </p>
+      </div>
+
+      <form [formGroup]="readingForm" (ngSubmit)="submitReading()" class="reading-form">
+        <div class="form-group">
+          <label for="readingInput">
+            Enter {{ readingType === 'opening' ? 'Opening' : 'Closing' }} Meter Reading (liters):
+          </label>
+          <input
+            id="readingInput"
+            type="number"
+            formControlName="readingValue"
+            placeholder="Enter exact reading from nozzle"
+            class="form-control"
+            step="0.01"
+            autofocus
+          />
+          <small class="help-text">Read the exact value from the nozzle pump meter</small>
+        </div>
+
+        <div class="button-group">
+          <button
+            type="submit"
+            [disabled]="!readingForm.valid || isSubmitting"
+            class="btn btn-submit"
+          >
+            {{ isSubmitting ? 'Recording...' : 'Record Reading' }}
+          </button>
+        </div>
+      </form>
     </div>
-
-    <form [formGroup]="readingForm" (ngSubmit)="submitReading()" class="reading-form">
-      <div class="form-group">
-        <label for="readingInput">Enter Meter Reading (liters):</label>
-        <input
-          id="readingInput"
-          type="number"
-          formControlName="readingValue"
-          placeholder="Enter reading value"
-          class="form-control"
-          step="0.01"
-          autofocus
-        />
-        <small class="help-text">Enter the exact reading from the nozzle meter</small>
-      </div>
-
-      <div class="button-group">
-        <button type="submit" [disabled]="!readingForm.valid" class="btn btn-success">
-          Record Reading
-        </button>
-        <button type="button" (click)="skipReading()" class="btn btn-secondary">
-          Skip to Next
-        </button>
-      </div>
-    </form>
   </div>
-</div>
 
-<div class="completion-message" *ngIf="allNozzlesProcessed">
-  <h4>✓ Opening Readings Recorded</h4>
-  <p>All {{ recordedReadings.length }} nozzles have been recorded successfully.</p>
-  <div class="readings-summary">
-    <h5>Summary:</h5>
-    <ul>
-      <li *ngFor="let reading of recordedReadings">
-        Nozzle {{ nozzles[recordedReadings.indexOf(reading)].nozzleNumber }}:
-        {{ reading.readingValue }} liters
-      </li>
-    </ul>
+  <div *ngIf="isReadingRecorded" class="reading-recorded">
+    <div class="success-badge">
+      <span class="checkmark">✓</span>
+      <p>Reading Recorded</p>
+    </div>
+    <p class="nozzle-label">Nozzle {{ nozzle?.nozzleNumber }} - {{ nozzle?.fuelType }}</p>
   </div>
 </div>

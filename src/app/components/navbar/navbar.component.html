@@ -1,0 +1,45 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <h1>Petrol Pump Accounting</h1>
+    </div>
+
+    <ul class="nav-links">
+      <li class="nav-item">
+        <a
+          routerLink="/shift-start"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nav-link"
+        >
+          <span class="icon">🚀</span>
+          <span>Start Shift</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          routerLink="/shift-close"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nav-link"
+        >
+          <span class="icon">🏁</span>
+          <span>Close Shift</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          routerLink="/daily-sales"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nav-link"
+        >
+          <span class="icon">📊</span>
+          <span>Daily Sales</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

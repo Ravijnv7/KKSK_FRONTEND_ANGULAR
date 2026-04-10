@@ -1,0 +1,85 @@
+<div class="shift-close-container">
+  <h2>Close Shift - Record Closing Readings</h2>
+
+  <!-- No Active Shift -->
+  <div *ngIf="!currentShiftAssignment" class="no-shift">
+    <p class="alert alert-info">No active shift found. Please start a shift first.</p>
+  </div>
+
+  <!-- Shift Active - Before Closing Readings -->
+  <div
+    *ngIf="currentShiftAssignment && !showClosingReadingForm && !showSalesReport"
+    class="shift-active"
+  >
+    <div class="shift-info-card">
+      <h3>Active Shift</h3>
+      <div class="shift-details">
+        <p>
+          <strong>Staff:</strong>
+          <span class="value">{{ currentShiftAssignment.staffName }}</span>
+        </p>
+        <p>
+          <strong>DU:</strong>
+          <span class="value">{{ currentShiftAssignment.duId }}</span>
+        </p>
+        <p>
+          <strong>Shift Date:</strong>
+          <span class="value">{{ currentShiftAssignment.shiftDate | date: 'short' }}</span>
+        </p>
+        <p>
+          <strong>Nozzles:</strong>
+          <span class="value">
+            <span *ngFor="let nozzle of availableNozzles; let last = last">
+              {{ nozzle.nozzleNumber }}{{ !last ? ', ' : '' }}
+            </span>
+          </span>
+        </p>
+      </div>
+
+      <div class="opening-readings">
+        <h4>Opening Readings Recorded:</h4>
+        <div class="readings-list">
+          <div *ngFor="let nozzle of availableNozzles" class="reading-item">
+            <span class="nozzle-label">
+              Nozzle {{ nozzle.nozzleNumber }} ({{ nozzle.fuelType }}):
+            </span>
+            <span class="reading-value"> {{ getOpeningReading(nozzle.id) }} L </span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-close-shift" (click)="startClosingReadings()">
+        Record Closing Readings
+      </button>
+    </div>
+  </div>
+
+  <!-- Closing Readings Form -->
+  <div *ngIf="showClosingReadingForm && !showSalesReport" class="closing-reading-section">
+    <h3>Record Closing Meter Readings</h3>
+    <p class="info-text">
+      Closing Readings Recorded: {{ closingReadingsRecorded }} /
+      {{ currentShiftAssignment?.nozzleIds?.length || 0 }}
+    </p>
+
+    <app-meter-reading
+      *ngFor="let nozzleId of currentShiftAssignment?.nozzleIds"
+      [nozzleId]="nozzleId"
+      [staffId]="currentShiftAssignment?.staffId || ''"
+      [duId]="currentShiftAssignment?.duId || ''"
+      [readingType]="'closing'"
+      [isReadingRecorded]="hasClosingReading(nozzleId)"
+      [previousReading]="getOpeningReading(nozzleId)"
+      (readingRecorded)="onClosingReadingRecorded($event)"
+    ></app-meter-reading>
+  </div>
+
+  <!-- Sales Report -->
+  <app-sales-report
+    *ngIf="showSalesReport"
+    [shiftAssignment]="currentShiftAssignment"
+    [meterReadings]="allMeterReadings"
+    [availableNozzles]="availableNozzles"
+    (completedShift)="completeShift()"
+  ></app-sales-report>
+</div>

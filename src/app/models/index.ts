@@ -45,6 +45,8 @@ export interface ShiftAssignment {
   openingReadings: MeterReading[];
   closingReadings?: MeterReading[];
   status: 'in-progress' | 'completed';
+  dieselPrice?: number; // Price per liter
+  petrolPrice?: number; // Price per liter
 }
 
 export interface DailySalesReport {

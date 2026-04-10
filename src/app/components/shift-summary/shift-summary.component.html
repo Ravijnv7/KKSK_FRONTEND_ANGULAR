@@ -1,0 +1,51 @@
+<div class="shift-summary-container">
+  <h3>Shift Summary</h3>
+
+  <div class="summary-card" *ngIf="shiftAssignment">
+    <div class="staff-info">
+      <h4>Staff Information</h4>
+      <p><strong>Name:</strong> {{ shiftAssignment.staffName }}</p>
+      <p><strong>DU:</strong> {{ shiftAssignment.duId }}</p>
+      <p><strong>Date:</strong> {{ shiftAssignment.shiftDate | date }}</p>
+      <p>
+        <strong>Status:</strong> <span class="status-badge">{{ shiftAssignment.status }}</span>
+      </p>
+    </div>
+
+    <div class="nozzle-readings">
+      <h4>Meter Readings</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Nozzle</th>
+            <th>Fuel Type</th>
+            <th>Opening Reading</th>
+            <th>Current Reading</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let nozzle of nozzleDetails">
+            <td>Nozzle {{ nozzle.nozzleNumber }}</td>
+            <td>{{ nozzle.fuelType }}</td>
+            <td>
+              <span class="reading-value">
+                {{ getReadingForNozzle(nozzle.id)?.readingValue || 'Not Recorded' }}
+              </span>
+            </td>
+            <td>{{ nozzle.currentReading }}</td>
+            <td>
+              <span [class]="'status-' + (getReadingForNozzle(nozzle.id) ? 'recorded' : 'pending')">
+                {{ getReadingForNozzle(nozzle.id) ? '✓ Recorded' : '✗ Pending' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-complete" (click)="continueToCloseShift()">Continue to Close Shift</button>
+  </div>
+</div>
