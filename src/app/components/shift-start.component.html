@@ -1,7 +1,8 @@
 <div class="shift-start-container">
   <h2>Start Shift - Meter Reading</h2>
 
-  <div *ngIf="!showReadingForm" class="setup-form">
+  <!-- Selection Form -->
+  <div *ngIf="!showReadingForm && !showSummary" class="setup-form">
     <form [formGroup]="shiftForm" (ngSubmit)="startShift()">
       <!-- Staff Selection -->
       <div class="form-group">
@@ -84,14 +85,26 @@
     </div>
   </div>
 
-  <!-- Meter Reading Form -->
-  <div *ngIf="showReadingForm && currentShiftAssignment" class="reading-section">
+  <!-- Meter Reading Form (Sequential) -->
+  <div *ngIf="showReadingForm && !showSummary && currentShiftAssignment" class="reading-section">
+    <h3>Record Meter Readings</h3>
+    <p class="info-text">Readings Recorded: {{ readingsRecorded }} / 2</p>
+
     <app-meter-reading
-      [shiftAssignment]="currentShiftAssignment"
-      [nozzles]="selectedNozzles"
-      (readingRecorded)="onReadingRecorded()"
-    >
-    </app-meter-reading>
-    <p class="progress-text">Readings recorded: {{ readingsRecorded }}/2</p>
+      *ngFor="let nozzleId of currentShiftAssignment.nozzleIds"
+      [nozzleId]="nozzleId"
+      [staffId]="currentShiftAssignment.staffId"
+      [duId]="currentShiftAssignment.duId"
+      [isReadingRecorded]="hasNozzleReading(nozzleId)"
+      (readingRecorded)="onReadingRecorded($event)"
+    ></app-meter-reading>
   </div>
+
+  <!-- Summary Component -->
+  <app-shift-summary
+    *ngIf="showSummary"
+    [shiftAssignment]="currentShiftAssignment"
+    [meterReadings]="storageService.getMeterReadings()"
+    (completedShift)="completeShift()"
+  ></app-shift-summary>
 </div>

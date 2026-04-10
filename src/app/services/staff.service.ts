@@ -7,11 +7,11 @@ import { Staff } from '../models/index';
 })
 export class StaffService {
   private mockStaff: Staff[] = [
-    { id: 'staff-1', name: 'Rajesh Kumar', shift: 'Morning', status: 'active' },
-    { id: 'staff-2', name: 'Priya Singh', shift: 'Morning', status: 'active' },
-    { id: 'staff-3', name: 'Amit Patel', shift: 'Afternoon', status: 'active' },
-    { id: 'staff-4', name: 'Neha Sharma', shift: 'Afternoon', status: 'active' },
-    { id: 'staff-5', name: 'Vikram Yadav', shift: 'Night', status: 'active' },
+    { id: 'staff-1', name: 'Vikash Rana', shift: 'Morning', status: 'active' },
+    { id: 'staff-2', name: 'Gautam Yadav', shift: 'Morning', status: 'active' },
+    { id: 'staff-3', name: 'Pappu ', shift: 'Afternoon', status: 'active' },
+    { id: 'staff-4', name: 'Pramod Yadav', shift: 'Afternoon', status: 'active' },
+    { id: 'staff-5', name: 'Dineshwar Rana', shift: 'Night', status: 'active' },
   ];
 
   private staffSubject = new BehaviorSubject<Staff[]>(this.mockStaff);

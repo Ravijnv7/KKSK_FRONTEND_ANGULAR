@@ -7,8 +7,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ReadingService } from '../../services';
-import { ShiftAssignment, Nozzle, MeterReading } from '../../models/index';
+import { ReadingService, StorageService, DUService } from '../../services';
+import { Nozzle, MeterReading } from '../../models/index';
 
 @Component({
   selector: 'app-meter-reading',
@@ -18,18 +18,21 @@ import { ShiftAssignment, Nozzle, MeterReading } from '../../models/index';
   styleUrls: ['./meter-reading.component.scss'],
 })
 export class MeterReadingComponent implements OnInit {
-  @Input() shiftAssignment: ShiftAssignment | null = null;
-  @Input() nozzles: Nozzle[] = [];
-  @Output() readingRecorded = new EventEmitter<void>();
+  @Input() nozzleId: string = '';
+  @Input() staffId: string = '';
+  @Input() duId: string = '';
+  @Input() isReadingRecorded: boolean = false;
+  @Output() readingRecorded = new EventEmitter<{ nozzleId: string; readingValue: number }>();
 
   readingForm: FormGroup;
-  currentNozzleIndex = 0;
-  recordedReadings: MeterReading[] = [];
-  allNozzlesProcessed = false;
+  nozzle: Nozzle | null = null;
+  isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
     private readingService: ReadingService,
+    private storageService: StorageService,
+    private duService: DUService,
   ) {
     this.readingForm = this.fb.group({
       readingValue: ['', [Validators.required, Validators.min(0)]],
@@ -37,63 +40,49 @@ export class MeterReadingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadNextNozzle();
-  }
-
-  get currentNozzle(): Nozzle | null {
-    return this.nozzles[this.currentNozzleIndex] || null;
-  }
-
-  get progressPercentage(): number {
-    if (this.nozzles.length === 0) return 0;
-    return ((this.currentNozzleIndex + 1) / this.nozzles.length) * 100;
-  }
-
-  loadNextNozzle(): void {
-    this.readingForm.reset();
-    if (this.currentNozzleIndex < this.nozzles.length) {
-      // Form is ready for next reading
-    } else {
-      this.allNozzlesProcessed = true;
+    this.loadNozzleDetails();
+    if (this.isReadingRecorded) {
+      this.readingForm.disable();
     }
   }
 
+  loadNozzleDetails(): void {
+    this.duService.getDUById(this.duId).subscribe((du) => {
+      if (du) {
+        this.nozzle = du.nozzles.find((n) => n.id === this.nozzleId) || null;
+      }
+    });
+  }
+
   submitReading(): void {
-    if (this.readingForm.valid && this.currentNozzle && this.shiftAssignment) {
+    if (this.readingForm.valid && this.nozzle && !this.isSubmitting) {
+      this.isSubmitting = true;
       const readingValue = this.readingForm.get('readingValue')?.value;
 
       const reading: MeterReading = {
         id: `reading-${Date.now()}-${Math.random()}`,
-        nozzleId: this.currentNozzle.id,
-        duId: this.shiftAssignment.duId,
-        staffId: this.shiftAssignment.staffId,
-        staffName: this.shiftAssignment.staffName,
-        readingValue: readingValue,
+        nozzleId: this.nozzle.id,
+        duId: this.duId,
+        staffId: this.staffId,
+        staffName: 'Staff', // Can be updated with actual staff name if passed as input
+        readingValue: parseFloat(readingValue),
         readingTime: new Date(),
         type: 'opening',
       };
 
-      this.recordedReadings.push(reading);
+      // Save to localStorage
+      this.storageService.saveMeterReading(reading);
       this.readingService.recordReading(reading);
 
-      this.readingRecorded.emit();
+      // Emit event with nozzleId and reading value
+      this.readingRecorded.emit({
+        nozzleId: this.nozzle.id,
+        readingValue: parseFloat(readingValue),
+      });
 
-      this.currentNozzleIndex++;
-
-      if (this.currentNozzleIndex < this.nozzles.length) {
-        this.loadNextNozzle();
-      } else {
-        this.allNozzlesProcessed = true;
-      }
-    }
-  }
-
-  skipReading(): void {
-    this.currentNozzleIndex++;
-    if (this.currentNozzleIndex < this.nozzles.length) {
-      this.loadNextNozzle();
-    } else {
-      this.allNozzlesProcessed = true;
+      // Disable form after submission
+      this.readingForm.disable();
+      this.isSubmitting = false;
     }
   }
 }

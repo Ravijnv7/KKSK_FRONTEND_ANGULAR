@@ -100,3 +100,24 @@
   margin-top: 15px;
   font-weight: 500;
 }
+
+.reading-section {
+  h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+  }
+
+  .info-text {
+    background: #e8f4f8;
+    border-left: 4px solid #0277bd;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    color: #0277bd;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 20px 0;
+  }
+}
